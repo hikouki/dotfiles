@@ -846,6 +846,14 @@
 
 ;; git
 
+(use-package magit
+  :bind
+  (:map global-magit-file-mode-map ("C-c C-n" . branch-name-insert))
+  :preface
+  (defun branch-name-insert ()
+    (interactive)
+    (insert (magit-get-current-branch))))
+
 (use-package git-gutter
   :custom
   (git-gutter:modified-sign "~")
