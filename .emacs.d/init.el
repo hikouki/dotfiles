@@ -417,6 +417,7 @@
   :load-path "~/.emacs.d/elisp/src/hydra")
 
 (use-package lsp-mode
+  :load-path "~/.emacs.d/elisp/src/lsp-mode"
   :custom
   ;; debug
   (lsp-log-io t)
@@ -439,6 +440,7 @@
   (require 'lsp-clients)
   ;; LSP UI tools
   (use-package lsp-ui
+    :load-path "~/.emacs.d/elisp/src/lsp-ui"
     :custom
     ;; lsp-ui-doc
     (lsp-ui-doc-enable nil)

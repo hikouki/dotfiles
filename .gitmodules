@@ -34,3 +34,9 @@
 [submodule "elisp/src/add-node-modules-path"]
 	path = .emacs.d/elisp/src/add-node-modules-path
 	url = https://github.com/codesuki/add-node-modules-path
+[submodule ".emacs.d/elisp/src/lsp-mode"]
+	path = .emacs.d/elisp/src/lsp-mode
+	url = git@github.com:emacs-lsp/lsp-mode.git
+[submodule ".emacs.d/elisp/src/lsp-ui"]
+	path = .emacs.d/elisp/src/lsp-ui
+	url = git@github.com:emacs-lsp/lsp-ui.git
