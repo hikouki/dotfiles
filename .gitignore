@@ -1,0 +1,14 @@
+*
+*/
+
+!*/
+
+!/.tmux/plugins/tpm
+!/.zplug
+!/.screenrc
+!/.gitignore
+!/.gitmodules
+!/.zshrc
+!/README.md
+!/mac.terminal
+!/.tmux.conf

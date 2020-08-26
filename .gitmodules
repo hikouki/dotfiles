@@ -1,0 +1,36 @@
+[submodule ".tmux/plugins/tpm"]
+	path = .tmux/plugins/tpm
+	url = https://github.com/tmux-plugins/tpm
+[submodule ".zplug"]
+	path = .zplug
+	url = https://github.com/zplug/zplug
+[submodule ".emacs.d/elisp/src/browse-at-remote"]
+	path = .emacs.d/elisp/src/browse-at-remote
+	url = git@github.com:hikouki/browse-at-remote
+[submodule ".emacs.d/elisp/src/add-node-modules-path"]
+	path = .emacs.d/elisp/src/add-node-modules-path
+	url = https://github.com/codesuki/add-node-modules-path
+[submodule ".emacs.d/elisp/src/all-the-icons.el"]
+	path = .emacs.d/elisp/src/all-the-icons.el
+	url = https://github.com/ladicle/all-the-icons.el
+[submodule ".emacs.d/elisp/src/emacs-rotate"]
+	path = .emacs.d/elisp/src/emacs-rotate
+	url = https://github.com/daichirata/emacs-rotate
+[submodule ".emacs.d/elisp/src/flymake-posframe"]
+	path = .emacs.d/elisp/src/flymake-posframe
+	url = https://github.com/ladicle/flymake-posframe
+[submodule ".emacs.d/elisp/src/hydra"]
+	path = .emacs.d/elisp/src/hydra
+	url = https://github.com/abo-abo/hydra
+[submodule ".emacs.d/elisp/src/hydra-posframe"]
+	path = .emacs.d/elisp/src/hydra-posframe
+	url = https://github.com/ladicle/hydra-posframe
+[submodule ".emacs.d/elisp/src/ivy-ghq"]
+	path = .emacs.d/elisp/src/ivy-ghq
+	url = https://github.com/analyticd/ivy-ghq
+[submodule ".emacs.d/elisp/src/swiper"]
+	path = .emacs.d/elisp/src/swiper
+	url = https://github.com/abo-abo/swiper
+[submodule "elisp/src/add-node-modules-path"]
+	path = .emacs.d/elisp/src/add-node-modules-path
+	url = https://github.com/codesuki/add-node-modules-path
