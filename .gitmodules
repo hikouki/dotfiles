@@ -12,7 +12,7 @@
 	url = https://github.com/codesuki/add-node-modules-path
 [submodule ".emacs.d/elisp/src/all-the-icons.el"]
 	path = .emacs.d/elisp/src/all-the-icons.el
-	url = https://github.com/ladicle/all-the-icons.el
+	url = git@github.com:hikouki/all-the-icons.el.git
 [submodule ".emacs.d/elisp/src/emacs-rotate"]
 	path = .emacs.d/elisp/src/emacs-rotate
 	url = https://github.com/daichirata/emacs-rotate
@@ -40,3 +40,6 @@
 [submodule ".emacs.d/elisp/src/lsp-ui"]
 	path = .emacs.d/elisp/src/lsp-ui
 	url = git@github.com:emacs-lsp/lsp-ui.git
+[submodule ".emacs.d/elisp/src/emacs-todoist"]
+	path = .emacs.d/elisp/src/emacs-todoist
+	url = git@github.com:hikouki/emacs-todoist.git

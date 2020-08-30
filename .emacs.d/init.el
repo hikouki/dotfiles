@@ -73,6 +73,10 @@
 
 (set-face-attribute 'region nil :background "#555")
 
+(use-package server
+  :ensure nil
+  :hook (after-init . server-mode))
+
 ;;
 ;; OS
 ;;
@@ -80,10 +84,10 @@
 (use-package exec-path-from-shell
   :custom
   (exec-path-from-shell-check-startup-files nil)
-  (exec-path-from-shell-variables '("PATH" "GOPATH"))
-  :config
-  (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize)))
+  (exec-path-from-shell-variables '("PATH" "GOPATH" "TODOIST_TOKEN")))
+
+(when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize))
 
 ;; Mac OS
 
@@ -102,7 +106,6 @@
 (use-package pbcopy
   :if (eq system-type 'darwin)
   :hook (dashboard-mode . (turn-on-pbcopy)))
-
 
 ;; Ignore split window horizontally
 (setq split-width-threshold nil)
@@ -216,9 +219,42 @@
     (set-cursor-color "cyan")
     (line-number-mode 1)
     (column-number-mode 0)
+    (doom-modeline-def-segment poti
+      "poti"
+      (propertize (poti-create) 'mouse-face 'mode-line-highlight 'help-echo "mouse-1: Scroll buffer position"))
     (doom-modeline-def-modeline 'main
       '(bar workspace-name window-number matches buffer-info remote-host buffer-position parrot selection-info)
-      '(misc-info persp-name lsp github debug minor-modes input-method major-mode process vcs checker))))
+      '(misc-info poti persp-name lsp github debug minor-modes input-method major-mode process vcs checker))))
+
+(use-package poti-mode
+  :load-path "~/.emacs.d/elisp/src/poti"
+  :hook
+  (doom-modeline-mode . poti-mode))
+
+(use-package todoist
+  :load-path "~/.emacs.d/elisp/src/emacs-todoist"
+  :config
+  (with-eval-after-load 'hydra
+    (defhydra hydra-todoist (:color pink :hint nil)
+      "
+^Task^            ^Move^       ^Refresh^
+^^^^^^^^-----------------------------------------------------------------
+_c_: create      _n_: next    _r_: refresh
+_e_: edit        _p_: prev    _!_: poti-refresh
+_d_: done
+_D_: delete
+"
+      ("c" todoist-new-task)
+      ("e" todoist-update-task)
+      ("d" todoist-close-task)
+      ("D" todoist-delete-task)
+      ("n" next-line)
+      ("p" previous-line)
+      ("r" todoist)
+      ("!" poti-refresh-task-count)
+      ("x" nil "cancel")
+      ("q" quit-window "quit" :color blue))
+    (add-hook 'todoist-mode-hook 'hydra-todoist/body)))
 
 (use-package nyan-mode
   :custom
@@ -417,7 +453,6 @@
   :load-path "~/.emacs.d/elisp/src/hydra")
 
 (use-package lsp-mode
-  :load-path "~/.emacs.d/elisp/src/lsp-mode"
   :custom
   ;; debug
   (lsp-log-io t)
@@ -437,10 +472,8 @@
   (:map lsp-mode-map
         ("C-c r"   . lsp-rename))
   :config
-  (require 'lsp-clients)
   ;; LSP UI tools
   (use-package lsp-ui
-    :load-path "~/.emacs.d/elisp/src/lsp-ui"
     :custom
     ;; lsp-ui-doc
     (lsp-ui-doc-enable nil)
@@ -848,7 +881,7 @@
 
 (use-package magit
   :bind
-  (:map global-magit-file-mode-map ("C-c C-n" . branch-name-insert))
+  (:map text-mode-map ("C-c C-n" . branch-name-insert))
   :preface
   (defun branch-name-insert ()
     (interactive)
@@ -919,6 +952,19 @@ _s_: split       _p_: scroll up
    (use-package avy-zap
       :config
       (bind-key* "M-z" 'avy-zap-up-to-char-dwim)))
+
+;;
+;; web
+;;
+
+(use-package web-mode
+  :init
+  (add-hook 'web-mode-hook 'emmet-mode)
+  (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.htm\\'" . web-mode))
+  :config
+  (setq web-mode-markup-indent-offset 2)
+  (use-package emmet-mode))
 
 ;;
 ;; Hydra
