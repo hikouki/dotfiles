@@ -73,6 +73,8 @@
 
 (set-face-attribute 'region nil :background "#555")
 
+(use-package request)
+
 (use-package server
   :ensure nil
   :hook (after-init . server-mode))
@@ -239,7 +241,7 @@
       "
 ^Task^            ^Move^       ^Refresh^
 ^^^^^^^^-----------------------------------------------------------------
-_c_: create      _n_: next    _r_: refresh
+_c_: create      _n_: next    _g_: refresh
 _e_: edit        _p_: prev    _!_: poti-refresh
 _d_: done
 _D_: delete
@@ -250,7 +252,7 @@ _D_: delete
       ("D" todoist-delete-task)
       ("n" next-line)
       ("p" previous-line)
-      ("r" todoist)
+      ("g" todoist)
       ("!" poti-refresh-task-count)
       ("x" nil "cancel")
       ("q" quit-window "quit" :color blue))
