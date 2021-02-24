@@ -4,5 +4,4 @@
 !/.gitignore
 !/.gitmodules
 !/init.el
-!*/
 !/elisp/src/*

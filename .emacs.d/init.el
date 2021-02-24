@@ -1,6 +1,10 @@
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (setq user-emacs-directory "~/.emacs.d/elisp")
-
+(setq gc-cons-threshold 12800000)
+(setq read-process-output-max (* 1024 1024))
+;; recursive limit.
+(setq max-specpdl-size 100000)
+(setq max-lisp-eval-depth 10000)
 ;; alt key is meta key.
 (when (and (eq system-type 'darwin) (eq window-system 'ns))
   (setq ns-command-modifier (quote super))
@@ -13,6 +17,20 @@
         package-enable-at-startup nil)
   (unless (file-directory-p package-user-dir)
     (make-directory package-user-dir t)))
+
+;;; straight.el
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
 (eval-when-compile
   (require 'package)
@@ -40,21 +58,22 @@
 
       ;; Japanese font settings
       (defun set-japanese-font (family)
-        (set-fontset-font (frame-parameter nil 'font) 'japanese-jisx0208        (font-spec :family family))
-        (set-fontset-font (frame-parameter nil 'font) 'japanese-jisx0212        (font-spec :family family))
-        (set-fontset-font (frame-parameter nil 'font) 'katakana-jisx0201        (font-spec :family family)))
+        (set-fontset-font (frame-parameter nil 'font) 'japanese-jisx0208        (font-spec :family family :size 12))
+        (set-fontset-font (frame-parameter nil 'font) 'japanese-jisx0212        (font-spec :family family :size 12))
+        (set-fontset-font (frame-parameter nil 'font) 'katakana-jisx0201        (font-spec :family family :size 12)))
 
       ;; Overwrite latin and greek char's font
       (defun set-latin-and-greek-font (family)
-        (set-fontset-font (frame-parameter nil 'font) '(#x0250 . #x02AF) (font-spec :family family)) ; IPA extensions
-        (set-fontset-font (frame-parameter nil 'font) '(#x00A0 . #x00FF) (font-spec :family family)) ; latin-1
-        (set-fontset-font (frame-parameter nil 'font) '(#x0100 . #x017F) (font-spec :family family)) ; latin extended-A
-        (set-fontset-font (frame-parameter nil 'font) '(#x0180 . #x024F) (font-spec :family family)) ; latin extended-B
-        (set-fontset-font (frame-parameter nil 'font) '(#x2018 . #x2019) (font-spec :family family)) ; end quote
-        (set-fontset-font (frame-parameter nil 'font) '(#x2588 . #x2588) (font-spec :family family)) ; █
-        (set-fontset-font (frame-parameter nil 'font) '(#x2500 . #x2500) (font-spec :family family)) ; ─
-        (set-fontset-font (frame-parameter nil 'font) '(#x2504 . #x257F) (font-spec :family family)) ; box character
-        (set-fontset-font (frame-parameter nil 'font) '(#x0370 . #x03FF) (font-spec :family family)))
+        (set-fontset-font (frame-parameter nil 'font) '(#x0250 . #x02AF) (font-spec :family family :size 12)) ; IPA extensions
+        (set-fontset-font (frame-parameter nil 'font) '(#x00A0 . #x00FF) (font-spec :family family :size 12)) ; latin-1
+        (set-fontset-font (frame-parameter nil 'font) '(#x0100 . #x017F) (font-spec :family family :size 12)) ; latin extended-A
+        (set-fontset-font (frame-parameter nil 'font) '(#x0180 . #x024F) (font-spec :family family :size 12)) ; latin extended-B
+        (set-fontset-font (frame-parameter nil 'font) '(#x2018 . #x2019) (font-spec :family family :size 12)) ; end quote
+        (set-fontset-font (frame-parameter nil 'font) '(#x2588 . #x2588) (font-spec :family family :size 12)) ; █
+        (set-fontset-font (frame-parameter nil 'font) '(#x2500 . #x2500) (font-spec :family family :size 12)) ; ─
+        (set-fontset-font (frame-parameter nil 'font) '(#x2504 . #x257F) (font-spec :family family :size 12)) ; box character
+        (set-fontset-font (frame-parameter nil 'font) '(#x0370 . #x03FF) (font-spec :family family :size 12))
+        (set-fontset-font (frame-parameter nil 'font) 'ascii (font-spec :family family :size 12)))
 
       (setq use-default-font-for-symbols nil)
       (setq inhibit-compacting-font-caches t)
@@ -68,12 +87,15 @@
         (set-face-attribute 'default nil :family jp-font-family :height 150))
       (set-japanese-font jp-font-family)
       (set-latin-and-greek-font default-font-family)
-      (add-to-list 'face-font-rescale-alist (cons default-font-family 0.86))
+      (add-to-list 'face-font-rescale-alist (cons default-font-family 1.0))
       (add-to-list 'face-font-rescale-alist (cons jp-font-family 1.0))))
 
 (set-face-attribute 'region nil :background "#555")
 
-(use-package request)
+(use-package inflections)
+
+(use-package request
+  :straight (:host github :repo "tkf/emacs-request" :branch "master"))
 
 (use-package server
   :ensure nil
@@ -223,7 +245,13 @@
     (column-number-mode 0)
     (doom-modeline-def-segment poti
       "poti"
-      (propertize (poti-create) 'mouse-face 'mode-line-highlight 'help-echo "mouse-1: Scroll buffer position"))
+      (propertize
+       (poti-create)
+       'mouse-face 'mode-line-highlight
+       'help-echo "mouse-1: Scroll buffer position"
+       'local-map (let ((map (make-sparse-keymap)))
+                    (define-key map [mode-line mouse-1] 'todoist)
+                    map)))
     (doom-modeline-def-modeline 'main
       '(bar workspace-name window-number matches buffer-info remote-host buffer-position parrot selection-info)
       '(misc-info poti persp-name lsp github debug minor-modes input-method major-mode process vcs checker))))
@@ -294,9 +322,8 @@ _D_: delete
   (global-undo-tree-mode))
 
 (use-package projectile
+  :straight (:host github :repo "bbatsov/projectile" :branch "master")
   :diminish
-  :bind
-  ("M-o p" . counsel-projectile-switch-project)
   :config
   (projectile-mode +1))
 
@@ -354,7 +381,13 @@ _D_: delete
   :hook
   (focus-out-hook . (ladicle/recentf-save-list-silence ladicle/recentf-cleanup-silence)))
 
+(use-package yasnippet
+  :diminish yas-minor-mode
+  :custom (yas-snippet-dirs '("~/.emacs.d/snippets"))
+  :hook (after-init . yas-global-mode))
+
 (use-package company
+  :straight (:host github :repo "company-mode/company-mode" :branch "master")
   :diminish company-mode
   :defines
   (company-dabbrev-ignore-case company-dabbrev-downcase)
@@ -390,6 +423,7 @@ _D_: delete
   (use-package company-posframe
     :diminish
     :hook (company-mode . company-posframe-mode))
+
   ;; Show pretty icons
   (use-package company-box
     :diminish
@@ -454,26 +488,38 @@ _D_: delete
 (use-package hydra
   :load-path "~/.emacs.d/elisp/src/hydra")
 
+(use-package string-inflection)
+
+(use-package scala-mode)
+
+(use-package php-mode)
+
+(use-package replace-from-region)
+
 (use-package lsp-mode
   :custom
   ;; debug
-  (lsp-log-io t)
-  (lsp-print-io t)
-  (lsp-trace t)
-  (lsp-print-performance t)
+  (lsp-completion-provider :capf)
+  (lsp-log-io nil)
+  (lsp-print-io nil)
+  (lsp-trace nil)
+  (lsp-print-performance nil)
+  (lsp-enable-file-watchers nil)
   ;; general
+  (flycheck-check-syntax-automatically nil)
   (lsp-auto-guess-root t)
-  (lsp-document-sync-method 'incremental) ;; none, full, incremental, or nil
+  (lsp-document-sync-method 'lsp--sync-incremental)
   (lsp-response-timeout 10)
   (lsp-prefer-flymake t) ;; t(flymake), nil(lsp-ui), or :none
   ;; go-client
   (lsp-clients-go-server-args '("--cache-style=always" "--diagnostics-style=onsave" "--format-style=goimports"))
   :hook
-  ((go-mode c-mode c++-mode js-mode) . lsp)
+  ((go-mode php-mode scala-mode c-mode c++-mode web-mode js-mode) . lsp)
   :bind
   (:map lsp-mode-map
         ("C-c r"   . lsp-rename))
   :config
+  (use-package lsp-metals)
   ;; LSP UI tools
   (use-package lsp-ui
     :custom
@@ -534,6 +580,32 @@ _D_: delete
                     :library-folders-fn (lambda (_workspace)
                                           lsp-clients-go-library-directories))))
 
+(use-package go-mode
+  :mode "\\.go\\'"
+  :custom (gofmt-command "goimports")
+  :bind (:map go-mode-map
+         ("C-c C-n" . go-run)
+         ("C-c ."   . go-test-current-test)
+         ("C-c f"   . go-test-current-file)
+         ("C-c a"   . go-test-current-project))
+  :config
+  (add-hook 'before-save-hook #'gofmt-before-save)
+  (use-package gotest)
+  (use-package go-tag
+    :config (setq go-tag-args (list "-transform" "camelcase"))))
+
+(use-package highlight-indentation
+  :config
+  (set-face-background 'highlight-indentation-face "#e3e3d3")
+  (set-face-background 'highlight-indentation-current-column-face "#c3b3b3"))
+
+(use-package yaml-mode
+  :mode "\\.yml\\'"
+  :hook
+  (yaml-mode . highlight-indentation-mode)
+  (yaml-mode . highlight-indentation-current-column-mode)
+  (yaml-mode . (lambda() (setq highlight-indentation-offset 2))))
+
 (use-package volatile-highlights
   :diminish
   :hook
@@ -553,8 +625,6 @@ _D_: delete
    ("C-c v o" . ivy-pop-view)
    ("C-c v ." . ivy-switch-view)
    ("M-s c" . counsel-ag)
-   ("M-o f" . counsel-fzf)
-   ("M-o r" . counsel-recentf)
    ("M-y" . counsel-yank-pop)
    :map ivy-minibuffer-map
    ("C-w" . ivy-backward-kill-word)
@@ -648,7 +718,6 @@ _D_: delete
     :load-path "~/.emacs.d/elisp/src/ivy-ghq"
     :commands (ivy-ghq-open)
     :bind
-    ("M-o p" . ivy-ghq-open-and-fzf)
     :custom
     (ivy-ghq-short-list t)
     :preface
@@ -872,8 +941,15 @@ _D_: delete
   (wgrep-auto-save-buffer t)
   (wgrep-change-readonly-file t))
 
+(use-package web-mode
+  :custom
+  (web-mode-css-indent-offset 2)
+  (web-mode-markup-indent-offset 2)
+  (web-mode-code-indent-offset 2))
+
 (add-hook 'js-mode-hook '(lambda() (add-node-modules-path)))
-(add-to-list 'auto-mode-alist '("\\.tsx?$" . js-mode))
+(add-hook 'web-mode-hook '(lambda() (add-node-modules-path)))
+(add-to-list 'auto-mode-alist '("\\.tsx?$" . web-mode))
 
 ;; multiple cursor
 
@@ -882,12 +958,35 @@ _D_: delete
 ;; git
 
 (use-package magit
+  :straight (:host github :repo "magit/magit" :branch "master")
   :bind
   (:map text-mode-map ("C-c C-n" . branch-name-insert))
   :preface
   (defun branch-name-insert ()
     (interactive)
     (insert (magit-get-current-branch))))
+
+(use-package smerge-mode
+  :ensure nil
+  :bind
+  ("C-c m" . hydra-merge/body)
+  :config
+  (add-hook 'smerge-mode-hook 'hydra-merge/body)
+  (with-eval-after-load 'hydra
+    (defhydra hydra-merge (:color pink :hint nil)
+      "
+^Merge^      ^Move^
+^^^^^^^^-----------------------------------------------------------------
+_a_: all     _n_: next
+_u_: up      _p_: prev
+_d_: down
+"
+      ("a" smerge-keep-all)
+      ("u" smerge-keep-upper)
+      ("d" smerge-keep-lower)
+      ("n" smerge-next)
+      ("p" smerge-prev)
+      ("q" nil))))
 
 (use-package git-gutter
   :custom
@@ -969,6 +1068,11 @@ _s_: split       _p_: scroll up
   (use-package emmet-mode))
 
 ;;
+;; terraform
+;;
+(use-package terraform-mode)
+
+;;
 ;; Hydra
 ;;
 
@@ -996,12 +1100,17 @@ _a_: ag                            _j_: avy jump
   ("q" nil))
   (bind-key* "C-z" 'hydra-primary/body))
 
+(defun insert-buffer-name ()
+  (interactive)
+  (insert (file-name-base (buffer-name))))
+
 ;; Global
 
 (global-unset-key "\C-z")
-(global-set-key (kbd "C-h")   'backward-delete-char)
-(global-set-key (kbd "M-h")   'backward-kill-word)
-(global-set-key (kbd "C--")   'undo)
+(global-set-key (kbd "C-h")     'backward-delete-char)
+(global-set-key (kbd "M-h")     'backward-kill-word)
+(global-set-key (kbd "C-c C-n") 'insert-buffer-name)
+(global-set-key (kbd "C--")     'undo)
 
 ;; lsp code jump.
 (bind-key* "M-." 'lsp-ui-peek-find-implementation)

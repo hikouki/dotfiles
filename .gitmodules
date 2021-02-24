@@ -10,9 +10,6 @@
 [submodule ".emacs.d/elisp/src/add-node-modules-path"]
 	path = .emacs.d/elisp/src/add-node-modules-path
 	url = https://github.com/codesuki/add-node-modules-path
-[submodule ".emacs.d/elisp/src/all-the-icons.el"]
-	path = .emacs.d/elisp/src/all-the-icons.el
-	url = git@github.com:hikouki/all-the-icons.el.git
 [submodule ".emacs.d/elisp/src/emacs-rotate"]
 	path = .emacs.d/elisp/src/emacs-rotate
 	url = https://github.com/daichirata/emacs-rotate
