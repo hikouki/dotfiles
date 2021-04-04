@@ -1003,6 +1003,8 @@ _d_: down
   :config
   (global-git-gutter-mode +1))
 
+;; git config --add browseAtRemote.type "github"
+;; git config --add browseAtRemote.url "https://github.com/hikouki/dotfiles"
 (use-package browse-at-remote
   :load-path "~/.emacs.d/elisp/src/browse-at-remote"
   :bind ("M-g r" . browse-at-remote))
