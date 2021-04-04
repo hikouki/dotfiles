@@ -5,6 +5,7 @@
 ;; recursive limit.
 (setq max-specpdl-size 100000)
 (setq max-lisp-eval-depth 10000)
+(setq default-tab-width 4)
 ;; alt key is meta key.
 (when (and (eq system-type 'darwin) (eq window-system 'ns))
   (setq ns-command-modifier (quote super))
@@ -588,6 +589,8 @@ _D_: delete
          ("C-c ."   . go-test-current-test)
          ("C-c f"   . go-test-current-file)
          ("C-c a"   . go-test-current-project))
+  :hook
+  (go-mode . (lambda () (setq tab-width 4)))
   :config
   (add-hook 'before-save-hook #'gofmt-before-save)
   (use-package gotest)
