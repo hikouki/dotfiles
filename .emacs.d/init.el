@@ -905,6 +905,8 @@ _D_: delete
   )
 
 ;; flymake
+(use-package flymake-eslint
+  :hook (web-mode . flymake-eslint-enable))
 
 (use-package flymake-posframe
   :load-path "~/.emacs.d/elisp/src/flymake-posframe"
