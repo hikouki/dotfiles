@@ -31,6 +31,12 @@ zplug load
 # FUNCTION
 #====================
 
+frepo() {
+  local dir
+  dir=$(ghq list > /dev/null | fzf-tmux --reverse +m) &&
+    cd $(ghq root)/$dir
+}
+
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=242'
 
 #====================
